@@ -71,7 +71,7 @@ const Home: React.FC = () => {
   return (
     <>
       <Layout style={styles.layout}>
-        <TopNavigation title="Eva Application" />
+        <TopNavigation title="TodoStack" />
         <Divider />
         <View style={styles.content}>
           {topTask ? (
@@ -82,9 +82,16 @@ const Home: React.FC = () => {
             </Card>
           ) : (
             <View style={styles.cardBlank}>
-              <Text category="h3">All tasks done!</Text>
+              <Text category="h3">🎊 All tasks done!</Text>
             </View>
           )}
+          {tasks.length > 0 ? (
+            <View style={styles.remaining}>
+              <Text>{`${tasks.length} task${
+                tasks.length === 1 ? '' : 's'
+              } to do`}</Text>
+            </View>
+          ) : null}
           <Button
             onPress={handleNewButtonPress}
             style={styles.addButton}
@@ -113,20 +120,19 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 12,
     alignItems: 'center',
-    justifyContent: 'space-between',
   },
   card: {
     width: '100%',
   },
   cardContent: {
-    minHeight: 340,
+    minHeight: 270,
     alignItems: 'center',
     justifyContent: 'center',
   },
   cardFooter: {
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     padding: 14,
   },
   cardBlank: {
@@ -134,11 +140,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  remaining: {
+    paddingTop: 16,
+  },
   addIcon: {
     height: 32,
     width: 32,
   },
   addButton: {
+    position: 'absolute',
+    bottom: 0,
     height: 70,
     width: 70,
     borderRadius: 50,
