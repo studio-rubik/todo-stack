@@ -1,5 +1,5 @@
-import React, {useState, useCallback} from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, {useState, useMemo, useCallback} from 'react';
+import {View, StyleSheet, Alert} from 'react-native';
 import {
   Button,
   Icon,
@@ -15,7 +15,7 @@ import useStore from '../hooks/useStore';
 import NewTask from './NewTask';
 
 const Home: React.FC = () => {
-  const {tasks} = useStore();
+  const {tasks, setTasks} = useStore();
   const [editorShown, setEditorShown] = useState(false);
 
   const PlusIcon = useCallback(
@@ -29,7 +29,7 @@ const Home: React.FC = () => {
     setEditorShown(true);
   }, [setEditorShown]);
 
-  const handleBackdropPress = useCallback(() => {
+  const dismissEditor = useCallback(() => {
     setEditorShown(false);
   }, [setEditorShown]);
 
@@ -37,15 +37,54 @@ const Home: React.FC = () => {
     setEditorShown(false);
   }, [setEditorShown]);
 
+  const handleDonePress = useCallback(() => {
+    if (setTasks == null) return;
+    Alert.alert(
+      '🎉 Well Done!',
+      '',
+      [
+        {
+          text: 'Revert',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            setTasks((prev) => prev.filter((t, i) => i < prev.length - 1));
+          },
+        },
+      ],
+      {cancelable: false},
+    );
+  }, []);
+
+  const CardFooter = useCallback((props: any) => {
+    return (
+      <View {...props} style={{...props.style, ...styles.cardFooter}}>
+        <Button onPress={handleDonePress}>Done</Button>
+      </View>
+    );
+  }, []);
+
+  const topTask = useMemo(() => tasks[tasks.length - 1], [tasks]);
+
   return (
     <>
       <Layout style={styles.layout}>
         <TopNavigation title="Eva Application" />
         <Divider />
         <View style={styles.content}>
-          <Card style={styles.card}>
-            <Text category="h3">{tasks[tasks.length - 1]?.content}</Text>
-          </Card>
+          {topTask ? (
+            <Card style={styles.card} footer={CardFooter}>
+              <View style={styles.cardContent}>
+                <Text category="h3">{topTask?.content}</Text>
+              </View>
+            </Card>
+          ) : (
+            <View style={styles.cardBlank}>
+              <Text category="h3">All tasks done!</Text>
+            </View>
+          )}
           <Button
             onPress={handleNewButtonPress}
             style={styles.addButton}
@@ -58,9 +97,8 @@ const Home: React.FC = () => {
         isVisible={editorShown}
         animationIn="fadeIn"
         animationOut="fadeOut"
-        onBackdropPress={handleBackdropPress}
       >
-        <NewTask onSubmit={handleEditorSubmit} />
+        <NewTask onSubmit={handleEditorSubmit} dismiss={dismissEditor} />
       </Modal>
     </>
   );
@@ -79,7 +117,20 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '100%',
+  },
+  cardContent: {
     minHeight: 340,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardFooter: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 14,
+  },
+  cardBlank: {
+    height: 340,
     alignItems: 'center',
     justifyContent: 'center',
   },
