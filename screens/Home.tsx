@@ -111,6 +111,8 @@ const Home: React.FC = () => {
   );
 };
 
+const CARD_HEIGHT = 270;
+
 const styles = StyleSheet.create({
   layout: {
     position: 'relative',
@@ -125,7 +127,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   cardContent: {
-    minHeight: 270,
+    minHeight: CARD_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -136,7 +138,7 @@ const styles = StyleSheet.create({
     padding: 14,
   },
   cardBlank: {
-    height: 340,
+    height: CARD_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',
   },
