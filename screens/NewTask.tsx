@@ -44,8 +44,12 @@ const NewTask: React.FC<Props> = ({onSubmit, dismiss}) => {
         break;
       case InsertType.random:
         setTasks((prev) => {
-          const ind = random(0, prev.length - 1);
-          prev.splice(ind, 0, types.newTask(value));
+          const newTask = types.newTask(value);
+          if (prev.length === 0) {
+            return [newTask];
+          }
+          const ind = random(0, prev.length);
+          prev.splice(ind, 0, newTask);
           return prev;
         });
         break;
