@@ -27,11 +27,15 @@ const Home: React.FC = () => {
 
   const handleNewButtonPress = useCallback(() => {
     setEditorShown(true);
-  }, []);
+  }, [setEditorShown]);
 
   const handleBackdropPress = useCallback(() => {
     setEditorShown(false);
-  }, []);
+  }, [setEditorShown]);
+
+  const handleEditorSubmit = useCallback(() => {
+    setEditorShown(false);
+  }, [setEditorShown]);
 
   return (
     <>
@@ -56,7 +60,7 @@ const Home: React.FC = () => {
         animationOut="fadeOut"
         onBackdropPress={handleBackdropPress}
       >
-        <NewTask />
+        <NewTask onSubmit={handleEditorSubmit} />
       </Modal>
     </>
   );
