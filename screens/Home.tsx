@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useCallback} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {
   Button,
@@ -9,30 +9,62 @@ import {
   Text,
   Card,
 } from '@ui-kitten/components';
+import Modal from 'react-native-modal';
+
+import useStore from '../hooks/useStore';
+import NewTask from './NewTask';
 
 const Home: React.FC = () => {
-  const PlusIcon = (props: any) => (
-    <Icon {...props} style={[props.style, styles.addIcon]} name="plus" />
+  const {tasks} = useStore();
+  const [editorShown, setEditorShown] = useState(false);
+
+  const PlusIcon = useCallback(
+    (props: any) => (
+      <Icon {...props} style={[props.style, styles.addIcon]} name="plus" />
+    ),
+    [],
   );
+
+  const handleNewButtonPress = useCallback(() => {
+    setEditorShown(true);
+  }, []);
+
+  const handleBackdropPress = useCallback(() => {
+    setEditorShown(false);
+  }, []);
+
   return (
-    <Layout style={styles.layout}>
-      <TopNavigation title="Eva Application" />
-      <Divider />
-      <View style={styles.content}>
-        <Card style={styles.card}>
-          <Text category="h3">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-          </Text>
-        </Card>
-        <Button style={styles.addButton} accessoryLeft={PlusIcon} />
-      </View>
-    </Layout>
+    <>
+      <Layout style={styles.layout}>
+        <TopNavigation title="Eva Application" />
+        <Divider />
+        <View style={styles.content}>
+          <Card style={styles.card}>
+            <Text category="h3">{tasks[tasks.length - 1]?.content}</Text>
+          </Card>
+          <Button
+            onPress={handleNewButtonPress}
+            style={styles.addButton}
+            accessoryLeft={PlusIcon}
+          />
+        </View>
+      </Layout>
+      <Modal
+        style={styles.taskEditor}
+        isVisible={editorShown}
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+        onBackdropPress={handleBackdropPress}
+      >
+        <NewTask />
+      </Modal>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   layout: {
+    position: 'relative',
     height: '100%',
   },
   content: {
@@ -55,6 +87,9 @@ const styles = StyleSheet.create({
     height: 70,
     width: 70,
     borderRadius: 50,
+  },
+  taskEditor: {
+    position: 'relative',
   },
 });
 
