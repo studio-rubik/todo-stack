@@ -21,6 +21,10 @@ function random(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+function validateValue(val: string) {
+  return 0 < val.length && val.length <= 100;
+}
+
 const NewTask: React.FC<Props> = ({onSubmit, dismiss}) => {
   const [value, setValue] = useState('');
   const [insertType, setInsertType] = useState<InsertType>(InsertType.top);
@@ -35,7 +39,7 @@ const NewTask: React.FC<Props> = ({onSubmit, dismiss}) => {
   );
 
   const handleSubmitPress = useCallback(() => {
-    if (setTasks == null) return;
+    if (setTasks == null || !validateValue(value)) return;
     const newTask = types.newTask(value);
     let index = -1;
     switch (insertType) {
