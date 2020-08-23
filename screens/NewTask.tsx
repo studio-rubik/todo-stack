@@ -3,6 +3,7 @@ import {SafeAreaView, View, StyleSheet} from 'react-native';
 import {Button, Input, Card, Radio} from '@ui-kitten/components';
 
 import * as types from '../common/types';
+import * as deviceDb from '../db/device';
 import useStore from '../hooks/useStore';
 
 type Props = {
@@ -36,22 +37,31 @@ const NewTask: React.FC<Props> = ({onSubmit, dismiss}) => {
   const handleSubmitPress = useCallback(() => {
     if (setTasks == null) return;
     const newTask = types.newTask(value);
+    let index = -1;
     switch (insertType) {
       case InsertType.top:
-        setTasks((prev) => [...prev, newTask]);
+        setTasks((prev) => {
+          index = prev.length;
+          return [...prev, newTask];
+        });
         break;
       case InsertType.bottom:
         setTasks((prev) => [newTask, ...prev]);
+        index = 0;
         break;
       case InsertType.random:
         setTasks((prev) => {
-          const ind = random(0, prev.length);
-          prev.splice(ind, 0, newTask);
+          index = random(0, prev.length);
+          prev.splice(index, 0, newTask);
+          // Create new array.
           return [...prev];
         });
         break;
       default:
         break;
+    }
+    if (index !== -1) {
+      deviceDb.saveTask(newTask, index);
     }
     inputRef.current?.blur();
     onSubmit();

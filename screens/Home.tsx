@@ -8,14 +8,20 @@ import {
   Layout,
   Text,
   Card,
+  Spinner,
 } from '@ui-kitten/components';
 import Modal from 'react-native-modal';
 
+import {Task} from '../common/types';
 import useStore from '../hooks/useStore';
+import * as deviceDb from '../db/device';
 import NewTask from './NewTask';
 
 const Home: React.FC = () => {
-  const {tasks, setTasks} = useStore();
+  const {loading, tasks, setTasks} = useStore();
+  const topTask = useMemo<Task | undefined>(() => tasks[tasks.length - 1], [
+    tasks,
+  ]);
   const [editorShown, setEditorShown] = useState(false);
 
   const PlusIcon = useCallback(
@@ -37,6 +43,8 @@ const Home: React.FC = () => {
     setEditorShown(false);
   }, [setEditorShown]);
 
+  console.log(topTask);
+
   const handleDonePress = useCallback(() => {
     if (setTasks == null) return;
     Alert.alert(
@@ -50,7 +58,12 @@ const Home: React.FC = () => {
         {
           text: 'OK',
           onPress: () => {
-            setTasks((prev) => prev.filter((t, i) => i < prev.length - 1));
+            setTasks((prev) => {
+              const top = prev[prev.length - 1];
+              if (top == null) return prev;
+              deviceDb.deleteTask(top.id);
+              return prev.filter((t, i) => i < prev.length - 1);
+            });
           },
         },
       ],
@@ -66,38 +79,40 @@ const Home: React.FC = () => {
     );
   }, []);
 
-  const topTask = useMemo(() => tasks[tasks.length - 1], [tasks]);
-
   return (
     <>
       <Layout style={styles.layout}>
         <TopNavigation title="TodoStack" />
         <Divider />
-        <View style={styles.content}>
-          {topTask ? (
-            <Card style={styles.card} footer={CardFooter}>
-              <View style={styles.cardContent}>
-                <Text category="h3">{topTask?.content}</Text>
+        {!loading ? (
+          <View style={styles.content}>
+            {topTask ? (
+              <Card style={styles.card} footer={CardFooter}>
+                <View style={styles.cardContent}>
+                  <Text category="h3">{topTask?.content}</Text>
+                </View>
+              </Card>
+            ) : (
+              <View style={styles.cardBlank}>
+                <Text category="h3">🎊 All tasks done!</Text>
               </View>
-            </Card>
-          ) : (
-            <View style={styles.cardBlank}>
-              <Text category="h3">🎊 All tasks done!</Text>
-            </View>
-          )}
-          {tasks.length > 0 ? (
-            <View style={styles.remaining}>
-              <Text>{`${tasks.length} task${
-                tasks.length === 1 ? '' : 's'
-              } to do`}</Text>
-            </View>
-          ) : null}
-          <Button
-            onPress={handleNewButtonPress}
-            style={styles.addButton}
-            accessoryLeft={PlusIcon}
-          />
-        </View>
+            )}
+            {tasks.length > 0 ? (
+              <View style={styles.remaining}>
+                <Text>{`${tasks.length} task${
+                  tasks.length === 1 ? '' : 's'
+                } to do`}</Text>
+              </View>
+            ) : null}
+            <Button
+              onPress={handleNewButtonPress}
+              style={styles.addButton}
+              accessoryLeft={PlusIcon}
+            />
+          </View>
+        ) : (
+          <Spinner />
+        )}
       </Layout>
       <Modal
         style={styles.taskEditor}
