@@ -35,22 +35,19 @@ const NewTask: React.FC<Props> = ({onSubmit, dismiss}) => {
 
   const handleSubmitPress = useCallback(() => {
     if (setTasks == null) return;
+    const newTask = types.newTask(value);
     switch (insertType) {
       case InsertType.top:
-        setTasks((prev) => [...prev, types.newTask(value)]);
+        setTasks((prev) => [...prev, newTask]);
         break;
       case InsertType.bottom:
-        setTasks((prev) => [types.newTask(value), ...prev]);
+        setTasks((prev) => [newTask, ...prev]);
         break;
       case InsertType.random:
         setTasks((prev) => {
-          const newTask = types.newTask(value);
-          if (prev.length === 0) {
-            return [newTask];
-          }
           const ind = random(0, prev.length);
           prev.splice(ind, 0, newTask);
-          return prev;
+          return [...prev];
         });
         break;
       default:
