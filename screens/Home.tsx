@@ -43,8 +43,6 @@ const Home: React.FC = () => {
     setEditorShown(false);
   }, [setEditorShown]);
 
-  console.log(topTask);
-
   const handleDonePress = useCallback(() => {
     if (setTasks == null) return;
     Alert.alert(
