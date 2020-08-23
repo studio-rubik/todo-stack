@@ -12,10 +12,11 @@ export default function App(): JSX.Element {
     <>
       <StatusBar barStyle="dark-content" />
       <IconRegistry icons={EvaIconsPack} />
+      <SafeAreaView style={styles.safeAreaTop} />
       <StoreProvider>
         <ApplicationProvider {...eva} theme={eva.light}>
           <Layout style={styles.layout}>
-            <SafeAreaView>
+            <SafeAreaView style={styles.safeAreaBottom}>
               <Home />
             </SafeAreaView>
           </Layout>
@@ -28,5 +29,11 @@ export default function App(): JSX.Element {
 const styles = StyleSheet.create({
   layout: {
     flex: 1,
+  },
+  safeAreaTop: {
+    flex: 0,
+  },
+  safeAreaBottom: {
+    backgroundColor: '#bfc3e0',
   },
 });

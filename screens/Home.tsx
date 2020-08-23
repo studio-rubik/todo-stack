@@ -92,7 +92,8 @@ const Home: React.FC = () => {
               </Card>
             ) : (
               <View style={styles.cardBlank}>
-                <Text category="h3">🎊 All tasks done!</Text>
+                <Text style={{fontSize: 50}}>☕️</Text>
+                <Text category="h3">Nothing to do...</Text>
               </View>
             )}
             {tasks.length > 0 ? (
@@ -135,6 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 12,
     alignItems: 'center',
+    backgroundColor: '#bfc3e0',
   },
   card: {
     width: '100%',
